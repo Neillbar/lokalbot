@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:lokalbot/components/chat_bubble.dart';
+import 'package:lokalbot/components/chat_section/chat_bubble.dart';
 import 'package:lokalbot/models/multi_component_model.dart';
 
 class ChatSectionview extends StatefulWidget {
@@ -48,6 +48,7 @@ class _ChatSectionviewState extends State<ChatSectionview> {
     setState(() {
       chats.add(event);
     });
+    scrollToBottom();
   }
 
   void clearChats() {

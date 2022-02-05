@@ -1,9 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:lokalbot/components/chat_section/chat_section_view.dart';
-import 'package:lokalbot/components/lokal_header.dart';
+import 'package:lokalbot/components/lokal_header/lokal_header.dart';
 import 'package:lokalbot/components/message_bottom_section/message_bottom_section.dart';
+import 'package:lokalbot/components/multiple_selection_section/multiple_selection_component.dart';
+import 'package:lokalbot/components/selections_bottom_section/selections_bottom_section.dart';
 import 'package:lokalbot/models/multi_component_model.dart';
 import 'package:lokalbot/shared/lokal_variables.dart';
 
@@ -23,6 +24,8 @@ class _LokalBotMainState extends State<LokalBotMain> {
   StreamSubscription? _nextComponentSubscription;
   MultiComponentType _nextComponent = MultiComponentType.none;
   Function<T>(T)? finished;
+  ChatSectionModel? chatSectionModel;
+  bool emptyWidget = false;
 
   @override
   void initState() {
@@ -34,7 +37,9 @@ class _LokalBotMainState extends State<LokalBotMain> {
     _nextComponentSubscription =
         widget.botActions?.listen((LokalBotActions event) {
       if (event.chat != null) {
+        chatSectionModel = event.chat;
         if (event.chat?.type != _nextComponent) {
+          emptyWidget = true;
           _nextComponent = event.chat!.type;
         }
         if (event.chat?.submitted != null) {
@@ -47,6 +52,11 @@ class _LokalBotMainState extends State<LokalBotMain> {
       }
 
       setState(() {});
+      Future.delayed(Duration(milliseconds: 100), () {
+        setState(() {
+          emptyWidget = false;
+        });
+      });
     });
   }
 
@@ -90,12 +100,36 @@ class _LokalBotMainState extends State<LokalBotMain> {
                 chatStream: chatStreamController.stream,
                 clearChat: clearChatStreamController.stream,
               )),
-             if(_nextComponent == MultiComponentType.general) MessageBottomSection(
-                sentPressed: (String value) {
-                  finished!(value);
-                  addSentTextToChat(value);
-                },
-              )
+              if (_nextComponent == MultiComponentType.multiSelection &&
+                  !emptyWidget)
+                Expanded(
+                  child: MultipleSelectionComponent(
+                    selectedItems: (List<MultiSelectModel> selectedItems) {
+                      finished!(selectedItems);
+                      String allItems = selectedItems
+                          .map((MultiSelectModel e) => e.title)
+                          .toList()
+                          .join(", ");
+                      addSentTextToChat(allItems);
+                    },
+                    options: chatSectionModel?.multiSelectoptions ?? [],
+                  ),
+                ),
+              if (_nextComponent == MultiComponentType.options && !emptyWidget)
+                SelectionsBottomSection(
+                  optionSelected: (OptionsModel option) {
+                    finished!(option);
+                    addSentTextToChat(option.title);
+                  },
+                  options: chatSectionModel?.options ?? [],
+                ),
+              if (_nextComponent == MultiComponentType.general && !emptyWidget)
+                MessageBottomSection(
+                  sentPressed: (String value) {
+                    finished!(value);
+                    addSentTextToChat(value);
+                  },
+                )
             ],
           )),
     );

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lokalbot/shared/lokal_colors.dart';
 import 'package:lokalbot/shared/lokal_variables.dart';
