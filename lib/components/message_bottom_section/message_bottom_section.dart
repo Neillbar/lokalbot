@@ -34,7 +34,7 @@ class _MessageBottomSectionState extends State<MessageBottomSection> {
     );
   }
 
-  Widget textWidget(Function sentPressed) {
+  Widget textWidget(Function(String) sentPressed) {
     return SizedBox(
       width: LokalVariables.screenWidth(context) * 0.95,
       child: Row(

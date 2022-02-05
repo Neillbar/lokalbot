@@ -21,8 +21,8 @@ class _LokalBotMainState extends State<LokalBotMain> {
   StreamController<bool> clearChatStreamController =
       StreamController<bool>.broadcast();
   StreamSubscription? _nextComponentSubscription;
-  MultiComponentType _nextComponent = MultiComponentType.general;
-  Function(dynamic)? finished;
+  MultiComponentType _nextComponent = MultiComponentType.none;
+  Function<T>(T)? finished;
 
   @override
   void initState() {
@@ -37,7 +37,9 @@ class _LokalBotMainState extends State<LokalBotMain> {
         if (event.chat?.type != _nextComponent) {
           _nextComponent = event.chat!.type;
         }
-        finished = (value) => {event.chat!.submitted(value)};
+        if (event.chat?.submitted != null) {
+          finished = <T>(value) => {event.chat!.submitted!(value)};
+        }
         addToChat(event.chat!);
       }
       if (event.clearchat != null) {
@@ -58,7 +60,9 @@ class _LokalBotMainState extends State<LokalBotMain> {
 
   void addSentTextToChat(String value) {
     chatStreamController.add(ChatSectionModel(
-        text: value, isbotTexting: false, submitted: (dynamic outputValue) {}));
+        text: value,
+        isbotTexting: false,
+        submitted: <String>(dynamic outputValue) {}));
   }
 
   @override
@@ -82,15 +86,12 @@ class _LokalBotMainState extends State<LokalBotMain> {
                 isLoading: true,
               ),
               Expanded(
-                  child: SizedBox(
-                child: ChatSectionview(
-                  chatStream: chatStreamController.stream,
-                  clearChat: clearChatStreamController.stream,
-                ),
-                width: LokalVariables.screenWidth(context),
+                  child: ChatSectionview(
+                chatStream: chatStreamController.stream,
+                clearChat: clearChatStreamController.stream,
               )),
-              MessageBottomSection(
-                sentPressed: (value) {
+             if(_nextComponent == MultiComponentType.general) MessageBottomSection(
+                sentPressed: (String value) {
                   finished!(value);
                   addSentTextToChat(value);
                 },

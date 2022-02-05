@@ -26,16 +26,16 @@ class LocationResponse {
       {this.address, this.area, this.postalCode, this.country = 'za'});
 }
 
-class ChatSectionModel {
+class ChatSectionModel<T> {
   bool isbotTexting;
   String text;
   MultiComponentType type;
-  Function(dynamic) submitted;
+  Function(T)? submitted;
   ChatSectionModel(
       {this.isbotTexting = true,
       required this.text,
-      required this.submitted,
-      this.type = MultiComponentType.general});
+      this.submitted,
+      this.type = MultiComponentType.none});
 }
 
 class LokalBotActions {

@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            test();
+            question1();
           },
         ),
         body: LokalBotMain(
@@ -35,47 +35,35 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  void test() {
-    lokalBoActionsStreamController.add(LokalBotActions(
-        chat: ChatSectionModel(
-      submitted: (dynamic text) {
-        if (text != null) {
-          String currentText = text;
-          validateName(currentText);
-        }
-      },
-      text: "Please give us your name",
-      isbotTexting: true,
-    )));
+  // #1 Question 1
+  void question1() async {
+    addTextForBot(
+        'Hi Hi, My name is LokalBot, im here to guide yout through the process');
+    addTextWithResponse(
+        message:
+            "Let's get started with your name and surname ? \n example: John Smith",
+        type: MultiComponentType.general,
+        response: <String>(value) {
+          print("Thi si smy names: $value");
+          addTextForBot('Hi $value welcome to lokalshop.');
+        });
   }
 
-  void validateName(String name) {
-    if (name.characters.length < 5) {
-      errorMessage((value) => {validateName(value)});
-    } else {
-      askSecondQuestion();
-    }
+  void addTextForBot(String message) {
+    lokalBoActionsStreamController
+        .add(LokalBotActions(chat: ChatSectionModel(text: message)));
   }
 
-  void errorMessage(Function(String) tryAgain) {
+  void addTextWithResponse<T>(
+      {required String message,
+      required Function(T) response,
+      MultiComponentType type = MultiComponentType.general}) {
     lokalBoActionsStreamController.add(LokalBotActions(
         chat: ChatSectionModel(
-      submitted: (dynamic value) {
-        print("This is my surname: $value");
-        tryAgain(value);
-      },
-      text:
-          "Oops unfortunately your name have to be longer than 4 characters, please try again.\n\n what is your name ?",
-    )));
-  }
-
-  void askSecondQuestion() {
-    lokalBoActionsStreamController.add(LokalBotActions(
-        chat: ChatSectionModel(
-      submitted: (dynamic value) {
-        print("This is my surname: $value");
-      },
-      text: "What is your surname",
-    )));
+            type: type,
+            text: message,
+            submitted: <T>(value) {
+              response(value);
+            })));
   }
 }
