@@ -75,7 +75,7 @@ class _ChatSectionviewState extends State<ChatSectionview> {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-        padding: const EdgeInsets.fromLTRB(0, 10, 0, 50),
+        padding: const EdgeInsets.fromLTRB(0, 10, 0, 80),
         controller: controller,
         shrinkWrap: true,
         itemBuilder: (context, index) => chats[index].isbotTexting

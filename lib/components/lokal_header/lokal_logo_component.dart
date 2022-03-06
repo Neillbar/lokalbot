@@ -15,7 +15,7 @@ class LokalLogoComponent extends StatelessWidget {
       child: Image.asset(
         'lib/assets/lokalbot_avatar.png',
         package: 'lokalbot',
-        scale: scaleFactor ?? 0.8,
+        scale: scaleFactor ?? 2.7,
         fit: BoxFit.cover,
       ),
       decoration: BoxDecoration(

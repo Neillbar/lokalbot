@@ -1,14 +1,15 @@
-import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:lokalbot/lokalbot.dart';
+import 'package:lokalbot/lokalbot_main/lokalbot_main_viewmodel.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: HomePage());
+        home: const HomePage());
   }
 }
 
@@ -32,31 +33,29 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   //Properties
   String? fullName;
-  List<MultiSelectModel> myFavFruit = [];
+  List<MultiSelectModel>? myFavFruit;
   OptionsModel? myOptions;
-  StreamController<LokalBotActions> lokalBoActionsStreamController =
-      StreamController<LokalBotActions>();
+  LokalbotMainViewModel viewModel = LokalbotMainViewModel();
 
   // #1 Question 1
   void question1() async {
-    addTextForBot(
-        'Hi Hi, My name is LokalBot, im here to guide yout through the process');
-    addTextWithResponse(
-      message: "Let's start with your name and surname ?\nExample: Jhn Smith",
-      response: (String response) {
-        fullName = response;
-        question2();
-      },
-      type: MultiComponentType.general,
-    );
+    viewModel.textWithNoResponse(
+        text:
+            'Hi Hi, My name is LokalBot, im here to guide you through the process');
+    viewModel.textResponse(
+        response: (String response) {
+          fullName = response;
+          question2();
+        },
+        text: "Let's start with your name and surname ?\nExample: Jhon Smith");
   }
 
   void question2() {
-    addTextForBot("awesome ${fullName ?? ''}, thanks for signing up with us.");
-    addTextWithResponse(
-        message: 'Now, please choose your favourite fruit',
-        type: MultiComponentType.multiSelection,
-        multiSelectoptions: [
+    viewModel.textWithNoResponse(
+        text: "awesome ${fullName ?? ''}, thanks for signing up with us.");
+    viewModel.multiSelectionResponse(
+        text: 'Now, please choose your favourite fruit',
+        options: [
           MultiSelectModel(title: "Apple", id: "apple"),
           MultiSelectModel(title: "Banana", id: "banana"),
           MultiSelectModel(title: "Strawberry", id: "strawberry")
@@ -68,12 +67,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void question3() {
-    addTextForBot(
-        "aaaah we see you like couple of fruits, is ${myFavFruit[0].title} your fav?");
-    addTextWithResponse(
-        message:
+    viewModel.textWithNoResponse(
+        text:
+            "aaaah we see you like couple of fruits, is ${myFavFruit?[0].title ?? ""} your fav?");
+    viewModel.optionResponse(
+        text:
             "Ignore that question 😂 😂 😂, Lets get down to business. When do you prefer to work ?",
-        type: MultiComponentType.options,
         options: [
           OptionsModel(
               id: "morning",
@@ -91,39 +90,58 @@ class _HomePageState extends State<HomePage> {
         response: (OptionsModel options) {
           myOptions = options;
           if (options.id == "morning") {
-            addTextForBot("🖕 🖕 🖕");
+            viewModel.textWithNoResponse(text: "🖕 🖕 🖕");
           }
           if (options.id == "afternoon") {
-            addTextForBot("${myOptions?.title ?? ''} are you a lazy bum ?  👌");
+            viewModel.textWithNoResponse(text: "are you a lazy bum ?  👌");
           }
           if (options.id == "late_evenings") {
-            addTextForBot(
-                "Yeah ${myOptions?.title ?? ''} is my fav time to work as well.... we are in sync 😎");
+            viewModel.textWithNoResponse(
+                text:
+                    "Yeah ${myOptions?.title ?? ''} is my fav time to work as well.... we are in sync 😎");
           }
+          question4();
         });
   }
 
-  void addTextForBot(String message) {
-    lokalBoActionsStreamController
-        .add(LokalBotActions(chat: ChatSectionModel(text: message)));
+  void question4() async {
+    viewModel.locationResponse(
+        text: "Where are you located ?",
+        response: (LocationObject response) {
+          question5();
+        });
   }
 
-  void addTextWithResponse<T>(
-      {required String message,
-      required Function(T) response,
-      List<MultiSelectModel>? multiSelectoptions,
-      List<OptionsModel>? options,
-      MultiComponentType type = MultiComponentType.general}) {
-    lokalBoActionsStreamController.add(LokalBotActions(
-        chat: ChatSectionModel(
-            multiSelectoptions: multiSelectoptions,
-            options: options,
-            type: type,
-            text: message,
-            submitted: <T>(value) {
-              response(value);
-            })));
+  void question5() async {
+    viewModel.imagesResponse(
+        text: "Please upload all your fav images!",
+        response: (List<File> response) {
+          viewModel.textWithNoResponse(text: 'Thanks for all the information!');
+        });
   }
+
+  // void addTextForBot(String message) {
+  //   lokalBoActionsStreamController
+  //       .add(LokalBotActions(chat: ChatSectionModel(text: message)));
+  // }
+
+  // void addTextWithResponse<T>(
+  //     {required String message,
+  //     required Function(T) response,
+  //     List<MultiSelectModel>? multiSelectoptions,
+  //     List<OptionsModel>? options,
+  //     MultiComponentType type = MultiComponentType.general}) {
+  //   lokalBoActionsStreamController.add(LokalBotActions(
+  //       chat: ChatSectionModel(
+  //           multiSelectoptions: multiSelectoptions,
+  //           options: options,
+  //           type: type,
+  //           text: message,
+  //           submitted: <T>(value) {
+  //             response(value);
+  //           }))
+  //           );
+  // }
 
   @override
   void initState() {
@@ -141,7 +159,7 @@ class _HomePageState extends State<HomePage> {
       //   },
       // ),
       body: LokalBotMain(
-        botActions: lokalBoActionsStreamController.stream,
+        viewModel: viewModel,
       ),
     );
   }

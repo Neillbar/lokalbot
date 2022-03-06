@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lokalbot/components/lokal_header/lokal_logo_component.dart';
 import 'package:lokalbot/components/modal_bottom_view.dart';
+import 'package:lokalbot/components/small_bottom_section.dart';
 import 'package:lokalbot/lokalbot.dart';
 import 'package:lokalbot/shared/lokal_colors.dart';
 import 'package:lokalbot/shared/lokal_variables.dart';
@@ -61,7 +62,7 @@ class _MultipleSelectionComponentState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      margin: const EdgeInsets.only(right: 10),
+                      margin: const EdgeInsets.only(right: 10, top: 3),
                       alignment: Alignment.topLeft,
                       child: SizedBox(
                         width: 20,
@@ -99,7 +100,7 @@ class _MultipleSelectionComponentState
                               if (widget.options[index].description == null)
                                 LokalLogoComponent(
                                   logoSize: const Size(25, 25),
-                                  scaleFactor: 1.4,
+                                  scaleFactor: 4,
                                 ),
                               const SizedBox(
                                 width: 5,
@@ -132,45 +133,33 @@ class _MultipleSelectionComponentState
         ),
         if (listThatContainsACheckedItem() != null)
           Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-              width: LokalVariables.screenWidth(context),
-              height: LokalVariables.screenHeight(context) * 0.15,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                Colors.white.withOpacity(1),
-                Colors.white.withOpacity(0.8),
-                Colors.white.withOpacity(0.7),
-                Colors.white.withOpacity(0.6),
-                Colors.white.withOpacity(0.4),
-                Colors.white.withOpacity(0.2),
-                Colors.white.withOpacity(1),
-              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-              alignment: Alignment.center,
-              child: SizedBox(
-                height: LokalVariables.screenHeight(context) * 0.08,
-                width: LokalVariables.screenWidth(context) * 0.4,
-                child: TextButton(
-                  style: ButtonStyle(
-                      elevation: MaterialStateProperty.all(0),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                              side:
-                                  const BorderSide(color: Colors.transparent))),
-                      backgroundColor:
-                          MaterialStateProperty.all(LokalColors.primaryColor)),
-                  onPressed: () {
-                    widget.selectedItems(listThatContainsACheckedItem() ?? []);
-                  },
-                  child: const Text(
-                    'Done',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
+              alignment: Alignment.bottomRight,
+              child: SmallbottomSection(
+                child: SizedBox(
+                  height: LokalVariables.screenHeight(context) * 0.08,
+                  width: LokalVariables.screenWidth(context) * 0.4,
+                  child: TextButton(
+                    style: ButtonStyle(
+                        elevation: MaterialStateProperty.all(0),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18.0),
+                                    side: const BorderSide(
+                                        color: Colors.transparent))),
+                        backgroundColor: MaterialStateProperty.all(
+                            LokalColors.primaryColor)),
+                    onPressed: () {
+                      widget
+                          .selectedItems(listThatContainsACheckedItem() ?? []);
+                    },
+                    child: const Text(
+                      'Done',
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          )
+              ))
       ],
     ));
   }

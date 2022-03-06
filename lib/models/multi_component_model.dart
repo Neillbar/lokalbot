@@ -1,5 +1,3 @@
-import 'dart:io';
-
 enum MultiComponentType {
   general,
   file,
@@ -9,6 +7,12 @@ enum MultiComponentType {
   none
 }
 
+class CoordinatesModel {
+  double? lat;
+  double? lng;
+  CoordinatesModel({this.lat, this.lng});
+}
+
 // class FileResponse {
 //   List<File>? files;
 //   int amountOfFiles;
@@ -16,22 +20,32 @@ enum MultiComponentType {
 //   FileResponse({this.amountOfFiles = 0, this.files});
 // }
 
-// class LocationResponse {
-//   String? address;
-//   String? area;
-//   String country;
-//   String? postalCode;
+class LocationObject {
+  String? formattedAddress;
+  String? placeId;
+  CoordinatesModel? area;
+  String? icon;
+  String? country;
+  String? postalCode;
+  String? streetName;
 
-//   LocationResponse(
-//       {this.address, this.area, this.postalCode, this.country = 'za'});
-// }
+  LocationObject(
+      {this.area,
+      this.country,
+      this.formattedAddress,
+      this.icon,
+      this.placeId,
+      this.streetName,
+      this.postalCode});
+}
 
 class ChatSectionModel<T> {
   /// when [MultiComponentType] is [MultiComponentType.options]
   /// you need to add multiple items for the user to select from
-  /// /// You need to expext a [OptionsModel] in submitted function
+  /// You need to expext a [OptionsModel] in submitted function
   ///
   List<OptionsModel>? options;
+
   /// if [MultiComponentType] is set to [MultiComponentType.multiSelection]
   /// You need to use pass in multiSelectoptions for the user to select from
   /// You need to expext a List<[MultiSelectModel]> in submitted function
@@ -61,7 +75,8 @@ class MultiSelectModel {
   String? description;
   String? id;
   bool checked;
-  MultiSelectModel({this.description, required this.title, this.id, this.checked = false});
+  MultiSelectModel(
+      {this.description, required this.title, this.id, this.checked = false});
 }
 
 class LokalBotActions {
